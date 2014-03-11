@@ -1,13 +1,12 @@
 [
 {
-  "modid": "WorldAndGenerationTweaks",
+  "modid": "worldandgenerationtweaks",
   "name": "WorldAndGenerationTweaks",
   "description": "WorldAndGenerationTweaks provides various assorted tweaks to terrain generation.",
-  "version": "1.6.0",
-  "mcversion": "1.6.4",
-  "url": "http://is.gd/sWk5fi",
-  "authors": [ "Thebombzen" ],
-  "dependencies" : [ "ThebombzenAPI" ]
+  "version": "1.7.0",
+  "mcversion": "1.7.2",
+  "credits": "Thebombzen",
+  "url": "http://is.gd/ThebombzensMods#WorldAndGenerationTweaks"
 }
 ]
 

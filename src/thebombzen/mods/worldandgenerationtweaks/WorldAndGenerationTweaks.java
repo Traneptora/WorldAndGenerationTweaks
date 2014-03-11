@@ -1,9 +1,12 @@
 package thebombzen.mods.worldandgenerationtweaks;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -11,42 +14,35 @@ import net.minecraft.world.gen.ChunkProviderGenerate;
 import net.minecraft.world.gen.ChunkProviderHell;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenPumpkin;
+import net.minecraft.world.gen.feature.WorldGenerator;
 import thebombzen.mods.thebombzenapi.ThebombzenAPIBaseMod;
-import thebombzen.mods.thebombzenapi.ThebombzenAPIConfiguration;
-import thebombzen.mods.thebombzenapi.client.ThebombzenAPIConfigScreen;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = "WorldAndGenerationTweaks", name = "WorldAndGenerationTweaks", version = "1.6.0", dependencies = "required-after:ThebombzenAPI")
+@Mod(modid = "worldandgenerationtweaks", name = "WorldAndGenerationTweaks", version = "1.7.0", dependencies = "required-after:thebombzenapi")
 public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		IWorldGenerator {
 
 	private Configuration configuration;
+	private Map<BiomeGenBase, Float> oldVariations = new HashMap<BiomeGenBase, Float>();
+	private Map<BiomeGenBase, Float> oldRootHeights = new HashMap<BiomeGenBase, Float>();
+	private Map<BiomeGenBase, WorldGenerator> oldWorldGenDirt = new HashMap<BiomeGenBase, WorldGenerator>();
+	private Map<BiomeGenBase, WorldGenerator> oldWorldGenGravel = new HashMap<BiomeGenBase, WorldGenerator>();
+	
 
-	@Instance(value = "WorldAndGenerationTweaks")
+	@Instance("worldandgenerationtweaks")
 	public static WorldAndGenerationTweaks instance;
 
 	public WorldAndGenerationTweaks() {
 		configuration = new Configuration(this);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void activeKeyPressed(int keyCode) {
-
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public ThebombzenAPIConfigScreen createConfigScreen(GuiScreen base) {
-		return new ConfigScreen(this, base, configuration);
 	}
 
 	@Override
@@ -68,39 +64,39 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			for (int x = 8; x < 24; x++) {
 				for (int z = 8; z < 24; z++) {
 					for (int y = 4; y > 0; y--) {
-						int id = world.getBlockId((chunkX << 4) + x, y,
+						Block block = world.getBlock((chunkX << 4) + x, y,
 								(chunkZ << 4) + z);
-						if (id == Block.bedrock.blockID) {
-							int setID;
-							int idabove = world.getBlockId((chunkX << 4) + x,
+						if (block == Blocks.bedrock) {
+							Block setBlock;
+							boolean above = world.isAirBlock((chunkX << 4) + x,
 									y + 1, (chunkZ << 4) + z);
-							int idbelow = world.getBlockId((chunkX << 4) + x,
+							boolean below = world.isAirBlock((chunkX << 4) + x,
 									y - 1, (chunkZ << 4) + z);
-							if (idabove == 0 || idbelow == 0) {
-								setID = 0;
+							if (above || below){
+								setBlock = Blocks.air;
 							} else {
-								setID = Block.netherrack.blockID;
+								setBlock = Blocks.netherrack;
 							}
 							world.setBlock((chunkX << 4) + x, y, (chunkZ << 4)
-									+ z, setID);
+									+ z, setBlock, 0, 3);
 						}
 					}
 					for (int y = 123; y < 127; y++) {
-						int id = world.getBlockId((chunkX << 4) + x, y,
+						Block block = world.getBlock((chunkX << 4) + x, y,
 								(chunkZ << 4) + z);
-						if (id == Block.bedrock.blockID) {
-							int setID;
-							int idabove = world.getBlockId((chunkX << 4) + x,
+						if (block == Blocks.bedrock) {
+							Block setBlock;
+							boolean above = world.isAirBlock((chunkX << 4) + x,
 									y + 1, (chunkZ << 4) + z);
-							int idbelow = world.getBlockId((chunkX << 4) + x,
+							boolean below = world.isAirBlock((chunkX << 4) + x,
 									y - 1, (chunkZ << 4) + z);
-							if (idabove == 0 || idbelow == 0) {
-								setID = 0;
+							if (above || below){
+								setBlock = Blocks.air;
 							} else {
-								setID = Block.netherrack.blockID;
+								setBlock = Blocks.netherrack;
 							}
 							world.setBlock((chunkX << 4) + x, y, (chunkZ << 4)
-									+ z, setID);
+									+ z, setBlock, 0, 3);
 						}
 					}
 				}
@@ -115,12 +111,18 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			for (int x = 0; x < 16; x++) {
 				for (int y = 1; y < 5; y++) {
 					for (int z = 0; z < 16; z++) {
-						int id = world.getBlockId((chunkX << 4) + x + 8, y,
-								(chunkZ << 4) + z + 8);
-						if (id == Block.bedrock.blockID) {
-							world.setBlock((chunkX << 4) + x + 8, y,
-									(chunkZ << 4) + z + 8, Block.stone.blockID);
+						Block setBlock;
+						boolean above = world.isAirBlock((chunkX << 4) + x,
+								y + 1, (chunkZ << 4) + z);
+						boolean below = world.isAirBlock((chunkX << 4) + x,
+								y - 1, (chunkZ << 4) + z);
+						if (above || below){
+							setBlock = Blocks.air;
+						} else {
+							setBlock = Blocks.stone;
 						}
+						world.setBlock((chunkX << 4) + x, y, (chunkZ << 4)
+								+ z, setBlock, 0, 2);
 					}
 				}
 			}
@@ -133,9 +135,9 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 				int x = (chunkX << 4) + random.nextInt(16);
 				int y = random.nextInt(28) + 4;
 				int z = (chunkZ << 4) + random.nextInt(16);
-				int id = world.getBlockId(x, y, z);
-				if (id == Block.stone.blockID) {
-					world.setBlock(x, y, z, Block.oreEmerald.blockID);
+				Block block = world.getBlock(x, y, z);
+				if (block == Blocks.stone) {
+					world.setBlock(x, y, z, Blocks.emerald_ore, 0, 2);
 				}
 			}
 		}
@@ -221,8 +223,9 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public ThebombzenAPIConfiguration<?> getConfiguration() {
+	public Configuration getConfiguration() {
 		return configuration;
 	}
 
@@ -233,13 +236,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Override
 	public String getLongVersionString() {
-		return "WorldAndGenerationTweaks v1.6.0 for Minecraft 1.6.4";
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getNumActiveKeys() {
-		return 0;
+		return "WorldAndGenerationTweaks, version 1.7.0, Minecraft 1.7.2";
 	}
 
 	@Override
@@ -261,56 +258,80 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Override
 	protected String getVersionFileURLString() {
-		return "https://dl.dropboxusercontent.com/u/51080973/WorldAndGenerationTweaks/WAGTVersion.txt";
+		return "https://dl.dropboxusercontent.com/u/51080973/Mods/WorldAndGenerationTweaks/WAGTVersion.txt";
 	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean hasConfigScreen() {
-		return true;
-	}
-
-	@EventHandler
-	public void load(FMLInitializationEvent event) {
-		GameRegistry.registerWorldGenerator(this);
-		for (BiomeGenBase biome : BiomeGenBase.biomeList) {
-			if (biome == null) {
+	
+	public void setBiomeChanges(){
+		for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()){
+			if (biome == null){
 				continue;
 			}
-			if (configuration
-					.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_DIRT)) {
-				biome.theBiomeDecorator.dirtGen = new WorldGenMinable(
-						Block.dirt.blockID, 8);
-			}
-			if (configuration
-					.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_GRAVEL)) {
-				biome.theBiomeDecorator.gravelGen = new WorldGenMinable(
-						Block.gravel.blockID, 8);
+			if (!oldWorldGenDirt.containsKey(biome)){
+				oldVariations.put(biome, biome.heightVariation);
+				oldRootHeights.put(biome, biome.rootHeight);
+				oldWorldGenDirt.put(biome, biome.theBiomeDecorator.dirtGen);
+				oldWorldGenGravel.put(biome, biome.theBiomeDecorator.gravelGen);
 			}
 		}
 		if (configuration.getPropertyBoolean(ConfigOption.TALLER_MOUNTAINS)) {
-			float oldMaxHeight = BiomeGenBase.extremeHills.maxHeight;
-			BiomeGenBase.extremeHills.maxHeight *= 3.6F / oldMaxHeight;
-			BiomeGenBase.extremeHillsEdge.maxHeight *= 3.6F / oldMaxHeight;
+			BiomeGenBase.extremeHills.heightVariation = 3.6F;
+			BiomeGenBase.extremeHillsEdge.heightVariation *= 3.6F / oldVariations.get(BiomeGenBase.extremeHills);
+			BiomeGenBase.extremeHillsPlus.heightVariation *= 3.6F / oldVariations.get(BiomeGenBase.extremeHills);
+		} else {
+			BiomeGenBase.extremeHills.heightVariation = oldVariations.get(BiomeGenBase.extremeHills);
+			BiomeGenBase.extremeHillsEdge.heightVariation = oldVariations.get(BiomeGenBase.extremeHillsEdge);
+			BiomeGenBase.extremeHillsPlus.heightVariation = oldVariations.get(BiomeGenBase.extremeHillsPlus);
 		}
 		if (configuration.getPropertyBoolean(ConfigOption.DEEPER_OCEANS)) {
-			BiomeGenBase.ocean.minHeight = -1.5F;
+			BiomeGenBase.ocean.rootHeight = -1.5F;
+		} else {
+			BiomeGenBase.ocean.rootHeight = oldRootHeights.get(BiomeGenBase.ocean);
 		}
 		if (configuration.getPropertyBoolean(ConfigOption.FLAT_PLAINS)) {
-			BiomeGenBase.plains.minHeight = 0.05F;
-			BiomeGenBase.plains.maxHeight = 0.1F;
+			BiomeGenBase.plains.heightVariation = 0.05F;
+			BiomeGenBase.plains.rootHeight = 0.075F;
+		} else {
+			BiomeGenBase.plains.heightVariation = oldVariations.get(BiomeGenBase.plains);
+			BiomeGenBase.plains.rootHeight = oldRootHeights.get(BiomeGenBase.plains);
 		}
 		if (configuration.getPropertyBoolean(ConfigOption.FLAT_DESERT)) {
-			BiomeGenBase.desert.minHeight = 0.05F;
-			BiomeGenBase.desert.maxHeight = 0.1F;
-			BiomeGenBase.desertHills.minHeight = 0.05F;
-			BiomeGenBase.desertHills.maxHeight = 0.1F;
+			BiomeGenBase.desert.heightVariation = 0.05F;
+			BiomeGenBase.desert.rootHeight = 0.075F;
+			BiomeGenBase.desertHills.heightVariation = 0.05F;
+			BiomeGenBase.desertHills.rootHeight = 0.075F;
+		} else {
+			BiomeGenBase.desert.heightVariation = oldVariations.get(BiomeGenBase.desert);
+			BiomeGenBase.desert.rootHeight = oldRootHeights.get(BiomeGenBase.desert);
+			BiomeGenBase.desertHills.heightVariation = oldVariations.get(BiomeGenBase.desertHills);
+			BiomeGenBase.desertHills.rootHeight = oldRootHeights.get(BiomeGenBase.desertHills);
+		}
+		for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()) {
+			if (biome == null){
+				continue;
+			}
+			if (configuration.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_DIRT)){
+				biome.theBiomeDecorator.dirtGen = new WorldGenMinable(Blocks.dirt, 8);
+			} else {
+				biome.theBiomeDecorator.dirtGen = oldWorldGenDirt.get(biome);
+			}
+			if (configuration.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_GRAVEL)){
+				biome.theBiomeDecorator.gravelGen = new WorldGenMinable(Blocks.gravel, 8);
+			} else {
+				biome.theBiomeDecorator.gravelGen = oldWorldGenGravel.get(biome);
+			}
 		}
 	}
 
 	@Override
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		super.preInit(event);
+	public void init1(FMLPreInitializationEvent event) {
+		GameRegistry.registerWorldGenerator(this, 0);
+		FMLCommonHandler.instance().findContainerFor(this).getMetadata().authorList = Arrays.asList("Thebombzen");
 	}
+
+
+	@Override
+	public String getDownloadLocationURLString() {
+		return "http://is.gd/ThebombzensMods#WorldAndGenerationTweaks";
+	}
+
 }
