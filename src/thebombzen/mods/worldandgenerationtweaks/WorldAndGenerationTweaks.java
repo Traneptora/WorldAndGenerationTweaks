@@ -15,19 +15,23 @@ import net.minecraft.world.gen.ChunkProviderHell;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenPumpkin;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraft.world.gen.structure.MapGenStronghold;
+import net.minecraft.world.gen.structure.MapGenVillage;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import thebombzen.mods.thebombzenapi.ThebombzenAPIBaseMod;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = "worldandgenerationtweaks", name = "WorldAndGenerationTweaks", version = "1.7.0", dependencies = "required-after:thebombzenapi")
+@Mod(modid = "worldandgenerationtweaks", name = "WorldAndGenerationTweaks", version = "1.7.0pre2", dependencies = "required-after:thebombzenapi", guiFactory="thebombzen.mods.worldandgenerationtweaks.client.ConfigGuiFactory")
 public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		IWorldGenerator {
 
@@ -40,10 +44,6 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Instance("worldandgenerationtweaks")
 	public static WorldAndGenerationTweaks instance;
-
-	public WorldAndGenerationTweaks() {
-		configuration = new Configuration(this);
-	}
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world,
@@ -60,7 +60,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 	public void generateNether(Random random, int chunkX, int chunkZ,
 			World world, IChunkProvider chunkGenerator,
 			IChunkProvider chunkProvider) {
-		if (configuration.getPropertyBoolean(ConfigOption.FLAT_BEDROCK)) {
+		if (configuration.getBooleanProperty(Configuration.FLAT_BEDROCK)) {
 			for (int x = 8; x < 24; x++) {
 				for (int z = 8; z < 24; z++) {
 					for (int y = 4; y > 0; y--) {
@@ -107,7 +107,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 	public void generateOverworld(Random random, int chunkX, int chunkZ,
 			World world, IChunkProvider chunkGenerator,
 			IChunkProvider chunkProvider) {
-		if (configuration.getPropertyBoolean(ConfigOption.FLAT_BEDROCK)) {
+		if (configuration.getBooleanProperty(Configuration.FLAT_BEDROCK)) {
 			for (int x = 0; x < 16; x++) {
 				for (int y = 1; y < 5; y++) {
 					for (int z = 0; z < 16; z++) {
@@ -129,7 +129,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		}
 
 		if (configuration
-				.getPropertyBoolean(ConfigOption.EMERALD_SPAWNS_EVERYWHERE)) {
+				.getBooleanProperty(Configuration.EMERALD_SPAWNS_EVERYWHERE)) {
 			int numberPerChunk = 3 + random.nextInt(6);
 			for (int i = 0; i < numberPerChunk; i++) {
 				int x = (chunkX << 4) + random.nextInt(16);
@@ -142,7 +142,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			}
 		}
 
-		if (configuration.getPropertyBoolean(ConfigOption.MORE_RED_MUSHROOMS)) {
+		if (configuration.getBooleanProperty(Configuration.MORE_RED_MUSHROOMS)) {
 			for (int i = 0; i < world.getBiomeGenForCoords(chunkX << 4,
 					chunkZ << 4).theBiomeDecorator.mushroomsPerChunk; i++) {
 				if (random.nextInt(4) == 0) { // this is 4 and not 7 b/c in
@@ -168,7 +168,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			}
 		}
 
-		if (configuration.getPropertyBoolean(ConfigOption.MORE_SUGARCANE)) {
+		if (configuration.getBooleanProperty(Configuration.MORE_SUGARCANE)) {
 			for (int i = 0; i < world.getBiomeGenForCoords((chunkX << 4),
 					(chunkZ << 4)).theBiomeDecorator.reedsPerChunk + 10; i++) {
 				int x = (chunkX << 4) + random.nextInt(16) + 8;
@@ -179,7 +179,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			}
 		}
 
-		if (configuration.getPropertyBoolean(ConfigOption.MORE_SPAWNED_CROPS)
+		if (configuration.getBooleanProperty(Configuration.MORE_SPAWNED_CROPS)
 				&& random.nextInt(62) == 0) { // 1 - (1-(1/32))*(1-(1/62)) = 3/2
 												// * 1/32
 			int x = (chunkX << 4) + random.nextInt(16) + 8;
@@ -188,9 +188,9 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			new WorldGenPumpkin().generate(world, random, x, y, z);
 		}
 
-		if (configuration.getPropertyBoolean(ConfigOption.NATURAL_MELONS)
+		if (configuration.getBooleanProperty(Configuration.NATURAL_MELONS)
 				&& (random.nextInt(32) == 0 || configuration
-						.getPropertyBoolean(ConfigOption.MORE_SPAWNED_CROPS)
+						.getBooleanProperty(Configuration.MORE_SPAWNED_CROPS)
 						&& random.nextInt(62) == 0)) { // 1 -
 														// (1-(1/32))*(1-(1/62))
 														// = 3/2 * 1/32
@@ -201,9 +201,9 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		}
 
 		if (configuration
-				.getPropertyBoolean(ConfigOption.NATURAL_CARROTS_POTATOES)
+				.getBooleanProperty(Configuration.NATURAL_CARROTS_POTATOES)
 				&& (random.nextInt(32) == 0 || configuration
-						.getPropertyBoolean(ConfigOption.MORE_SPAWNED_CROPS)
+						.getBooleanProperty(Configuration.MORE_SPAWNED_CROPS)
 						&& random.nextInt(62) == 0)) {
 			int x = (chunkX << 4) + random.nextInt(16) + 8;
 			int y = random.nextInt(128);
@@ -212,9 +212,9 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 		}
 
 		if (configuration
-				.getPropertyBoolean(ConfigOption.NATURAL_CARROTS_POTATOES)
+				.getBooleanProperty(Configuration.NATURAL_CARROTS_POTATOES)
 				&& (random.nextInt(32) == 0 || configuration
-						.getPropertyBoolean(ConfigOption.MORE_SPAWNED_CROPS)
+						.getBooleanProperty(Configuration.MORE_SPAWNED_CROPS)
 						&& random.nextInt(62) == 0)) {
 			int x = (chunkX << 4) + random.nextInt(16) + 8;
 			int y = random.nextInt(128);
@@ -236,7 +236,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Override
 	public String getLongVersionString() {
-		return "WorldAndGenerationTweaks, version 1.7.0, Minecraft 1.7.2";
+		return "WorldAndGenerationTweaks, version 1.7.0pre2, Minecraft 1.7.2";
 	}
 
 	@Override
@@ -258,7 +258,25 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Override
 	protected String getVersionFileURLString() {
-		return "https://dl.dropboxusercontent.com/u/51080973/Mods/WorldAndGenerationTweaks/WAGTVersion.txt";
+		//return "https://dl.dropboxusercontent.com/u/51080973/Mods/WorldAndGenerationTweaks/WAGTVersion.txt";
+		return "";
+	}
+	
+	@SubscribeEvent
+	public void decoreateBiomePre(DecorateBiomeEvent.Pre event){
+		setBiomeChanges();
+	}
+	
+	@SubscribeEvent
+	public void initializeMapGens(InitMapGenEvent event){
+		if (event.originalGen instanceof MapGenVillage && !(event.originalGen instanceof BetterMapGenVillage)){
+			event.newGen = new BetterMapGenVillage((MapGenVillage)event.originalGen);
+		}
+		if (configuration.getBooleanProperty(Configuration.MORE_STRONGHOLDS)){
+			if (event.originalGen instanceof MapGenStronghold && !(event.originalGen instanceof BetterMapGenStronghold)){
+				event.newGen = new BetterMapGenStronghold((MapGenStronghold)event.originalGen);
+			}
+		}
 	}
 	
 	public void setBiomeChanges(){
@@ -266,35 +284,35 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			if (biome == null){
 				continue;
 			}
-			if (!oldWorldGenDirt.containsKey(biome)){
+			if (!oldVariations.containsKey(biome)){
 				oldVariations.put(biome, biome.heightVariation);
 				oldRootHeights.put(biome, biome.rootHeight);
 				oldWorldGenDirt.put(biome, biome.theBiomeDecorator.dirtGen);
 				oldWorldGenGravel.put(biome, biome.theBiomeDecorator.gravelGen);
 			}
 		}
-		if (configuration.getPropertyBoolean(ConfigOption.TALLER_MOUNTAINS)) {
-			BiomeGenBase.extremeHills.heightVariation = 3.6F;
-			BiomeGenBase.extremeHillsEdge.heightVariation *= 3.6F / oldVariations.get(BiomeGenBase.extremeHills);
-			BiomeGenBase.extremeHillsPlus.heightVariation *= 3.6F / oldVariations.get(BiomeGenBase.extremeHills);
+		if (configuration.getBooleanProperty(Configuration.TALLER_MOUNTAINS)) {
+			BiomeGenBase.extremeHills.heightVariation = 2.5F;
+			BiomeGenBase.extremeHillsEdge.heightVariation *= 2.5F / oldVariations.get(BiomeGenBase.extremeHills);
+			BiomeGenBase.extremeHillsPlus.heightVariation *= 2.5F / oldVariations.get(BiomeGenBase.extremeHills);
 		} else {
 			BiomeGenBase.extremeHills.heightVariation = oldVariations.get(BiomeGenBase.extremeHills);
 			BiomeGenBase.extremeHillsEdge.heightVariation = oldVariations.get(BiomeGenBase.extremeHillsEdge);
 			BiomeGenBase.extremeHillsPlus.heightVariation = oldVariations.get(BiomeGenBase.extremeHillsPlus);
 		}
-		if (configuration.getPropertyBoolean(ConfigOption.DEEPER_OCEANS)) {
+		if (configuration.getBooleanProperty(Configuration.DEEPER_OCEANS)) {
 			BiomeGenBase.ocean.rootHeight = -1.5F;
 		} else {
 			BiomeGenBase.ocean.rootHeight = oldRootHeights.get(BiomeGenBase.ocean);
 		}
-		if (configuration.getPropertyBoolean(ConfigOption.FLAT_PLAINS)) {
+		if (configuration.getBooleanProperty(Configuration.FLAT_PLAINS)) {
 			BiomeGenBase.plains.heightVariation = 0.05F;
 			BiomeGenBase.plains.rootHeight = 0.075F;
 		} else {
 			BiomeGenBase.plains.heightVariation = oldVariations.get(BiomeGenBase.plains);
 			BiomeGenBase.plains.rootHeight = oldRootHeights.get(BiomeGenBase.plains);
 		}
-		if (configuration.getPropertyBoolean(ConfigOption.FLAT_DESERT)) {
+		if (configuration.getBooleanProperty(Configuration.FLAT_DESERT)) {
 			BiomeGenBase.desert.heightVariation = 0.05F;
 			BiomeGenBase.desert.rootHeight = 0.075F;
 			BiomeGenBase.desertHills.heightVariation = 0.05F;
@@ -309,12 +327,12 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 			if (biome == null){
 				continue;
 			}
-			if (configuration.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_DIRT)){
+			if (configuration.getBooleanProperty(Configuration.LESS_UNDERGROUND_DIRT)){
 				biome.theBiomeDecorator.dirtGen = new WorldGenMinable(Blocks.dirt, 8);
 			} else {
 				biome.theBiomeDecorator.dirtGen = oldWorldGenDirt.get(biome);
 			}
-			if (configuration.getPropertyBoolean(ConfigOption.LESS_UNDERGROUND_GRAVEL)){
+			if (configuration.getBooleanProperty(Configuration.LESS_UNDERGROUND_GRAVEL)){
 				biome.theBiomeDecorator.gravelGen = new WorldGenMinable(Blocks.gravel, 8);
 			} else {
 				biome.theBiomeDecorator.gravelGen = oldWorldGenGravel.get(biome);
@@ -324,8 +342,10 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod implements
 
 	@Override
 	public void init1(FMLPreInitializationEvent event) {
+		configuration = new Configuration(this);
 		GameRegistry.registerWorldGenerator(this, 0);
 		FMLCommonHandler.instance().findContainerFor(this).getMetadata().authorList = Arrays.asList("Thebombzen");
+		MinecraftForge.TERRAIN_GEN_BUS.register(this);
 	}
 
 
