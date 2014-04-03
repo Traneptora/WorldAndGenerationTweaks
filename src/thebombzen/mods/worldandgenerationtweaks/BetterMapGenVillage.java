@@ -7,7 +7,7 @@ import thebombzen.mods.thebombzenapi.ThebombzenAPI;
 
 public class BetterMapGenVillage extends MapGenVillage {
 	
-	public static final String[] terrainTypeNames = {"field_74928_c", "terrainType", "c"};
+	public static final String[] terrainTypeNames = {"field_75054_f", "terrainType", "f"};
 	public static final String[] gNames = {"field_82665_g", "g"};
 	public static final String[] hNames = {"field_82666_h", "h"};
 	

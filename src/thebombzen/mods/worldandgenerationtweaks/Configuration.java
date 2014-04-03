@@ -18,10 +18,10 @@ public class Configuration extends ThebombzenAPIConfiguration {
 	public static final ConfigOption EMERALD_SPAWNS_EVERYWHERE = new ConfigOption(true, "EMERALD_SPAWNS_EVERYWHERE", "Emerald ore spawns everywhere", "Generate emerald ore in every biome", "and twice as often in the extreme hills.");
 	public static final ConfigOption TALLER_MOUNTAINS = new ConfigOption(true, "TALLER_MOUNTAINS", "Taller mountains", "Generate taller and more sky-like mountains.");
 	public static final ConfigOption DEEPER_OCEANS = new ConfigOption(true, "DEEPER_OCEANS", "Deeper oceans", "Generate deeper oceans.");
-	public static final ConfigOption FLAT_DESERT = new ConfigOption(true, "FLAT_DESERT", "Generate flatter deserts", "and no desert hills.");
+	public static final ConfigOption FLAT_DESERT = new ConfigOption(true, "FLAT_DESERT", "Flat desert", "Generate flatter deserts", "and no desert hills.");
 	public static final ConfigOption FLAT_PLAINS = new ConfigOption(true, "FLAT_PLAINS", "Flat plains", "Generate flatter plains.");
 	public static final ConfigOption MORE_VILLAGES = new ConfigOption(true, "MORE_VILLAGES", "More villages", "Generate more villages.");
-	public static final ConfigOption MORE_STRONGHOLDS = new ConfigOption(true, "MORE_STRONGHOLDS", "Generate twice as many strongholds", "(6 per map instead of 3)", "and generate them twice as close to home.");
+	public static final ConfigOption MORE_STRONGHOLDS = new ConfigOption(true, "MORE_STRONGHOLDS", "More strongholds", "Generate twice as many strongholds", "(6 per map instead of 3)", "and generate them twice as close to home.");
 	
 	public Configuration(WorldAndGenerationTweaks mod) {
 		super(mod);
