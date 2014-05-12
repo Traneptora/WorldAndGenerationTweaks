@@ -27,7 +27,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = "worldandgenerationtweaks", name = "WorldAndGenerationTweaks", version = "1.7.0pre2", dependencies = "required-after:thebombzenapi", guiFactory="thebombzen.mods.worldandgenerationtweaks.client.ConfigGuiFactory")
+@Mod(modid = "worldandgenerationtweaks", name = "WorldAndGenerationTweaks", version = "1.7.0", dependencies = "required-after:thebombzenapi", guiFactory="thebombzen.mods.worldandgenerationtweaks.client.ConfigGuiFactory")
 public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod {
 
 	private Configuration configuration;
@@ -253,7 +253,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod {
 
 	@Override
 	public String getLongVersionString() {
-		return "WorldAndGenerationTweaks, version 1.7.0pre2, Minecraft 1.7.2";
+		return "WorldAndGenerationTweaks, version 1.7.0, Minecraft 1.7.2";
 	}
 
 	@Override
