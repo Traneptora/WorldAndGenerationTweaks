@@ -275,8 +275,7 @@ public class WorldAndGenerationTweaks extends ThebombzenAPIBaseMod {
 
 	@Override
 	protected String getVersionFileURLString() {
-		//return "https://dl.dropboxusercontent.com/u/51080973/Mods/WorldAndGenerationTweaks/WAGTVersion.txt";
-		return "";
+		return "https://dl.dropboxusercontent.com/u/51080973/Mods/WorldAndGenerationTweaks/WAGTVersion.txt";
 	}
 	
 	@SubscribeEvent
